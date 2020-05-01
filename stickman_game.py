@@ -38,49 +38,6 @@ class Coords:
         self.x2 = x2
         self.y2 = y2
 
-def  within_x(c1, c2):
-    if (c1.x1 > c2.x1 and c1.x1 < c2.x2) \
-       or (c1.x2 > c2.x1 and c1.x2 < c2.x2)\
-       or (c2.x1 > c1.x1 and c2.x1 < c1.x2)\
-       or (c2.x2 > c1.x1 and c2.x2 < c1.x2):
-        return True
-    else:
-        return False
-
-def  within_y(c1, c2):
-    if (c1.y1 > c2.y1 and c1.y1 < c2.y2) \
-       or (c1.y2 > c2.y1 and c1.y2 < c2.y2)\
-       or (c2.y1 > c1.y1 and c2.y1 < c1.y2)\
-       or (c2.y2 > c1.y1 and c2.y2 < c1.y2):
-        return True
-    else:
-        return False
-
-def collided_left(c1, c2):
-    if within_y(c1, c2):
-        if c1.x1 <= c2.x2 and c1.x1 >= c2.x1:
-            return True
-    return False
-
-def collided_right(c1, c2):
-    if within_y(c1, c2):
-       if c1.x2 >= c2.x1 and c1.x2 <= c2.x2:
-            return True
-    return False
-
-def collided_top(c1, c2):
-    if within_x(c1, c2):
-        if c1.y1 <= c2.y2 and c1.y1 >= c2.y1:
-            return True
-    return False
-
-def collided_bottom(y, c1, c2):
-    if within_x(c1, c2):
-        y_calc = c1.y2 + y
-        if y_calc >= c2.y1 and y_calc <= c2.y2:
-            return True
-    return False
-
 class Sprite:
     def __init__(self, game):
         self.game =  game
@@ -217,6 +174,51 @@ class Stickman(Sprite):
         if falling and bottom and self.y == 0 and cord.y2 < self.game.c_height:
             self.y = 4
         self.game.c.move(self.image, self.x, self.y)
+
+# Edited by Roman Petryk 01.05.2020
+def  within_x(c1, c2):
+    if (c1.x1 > c2.x1 and c1.x1 < c2.x2) \
+       or (c1.x2 > c2.x1 and c1.x2 < c2.x2)\
+       or (c2.x1 > c1.x1 and c2.x1 < c1.x2)\
+       or (c2.x2 > c1.x1 and c2.x2 < c1.x2):
+        return True
+    else:
+        return False
+
+def  within_y(c1, c2):
+    if (c1.y1 > c2.y1 and c1.y1 < c2.y2) \
+       or (c1.y2 > c2.y1 and c1.y2 < c2.y2)\
+       or (c2.y1 > c1.y1 and c2.y1 < c1.y2)\
+       or (c2.y2 > c1.y1 and c2.y2 < c1.y2):
+        return True
+    else:
+        return False
+
+def collided_left(c1, c2):
+    if within_y(c1, c2):
+        if c1.x1 <= c2.x2 and c1.x1 >= c2.x1:
+            return True
+    return False
+
+def collided_right(c1, c2):
+    if within_y(c1, c2):
+       if c1.x2 >= c2.x1 and c1.x2 <= c2.x2:
+            return True
+    return False
+
+def collided_top(c1, c2):
+    if within_x(c1, c2):
+        if c1.y1 <= c2.y2 and c1.y1 >= c2.y1:
+            return True
+    return False
+
+def collided_bottom(y, c1, c2):
+    if within_x(c1, c2):
+        y_calc = c1.y2 + y
+        if y_calc >= c2.y1 and y_calc <= c2.y2:
+            return True
+    return False
+
 
 g =Game()
 
