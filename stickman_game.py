@@ -98,6 +98,21 @@ class Platform(Sprite):
         self.image = game.c.create_image(x, y, image=self.photo_image, anchor='nw')
         self.coordinates = Coords(x, y, x + width, y + height)
 
+class Door(Sprite):
+    def __init__(self, game, x, y, width, height):
+        Sprite.__init__(self, game)
+        self.c_door = PhotoImage(file="d_close.gif")
+        self.o_door = PhotoImage(file="d_open.gif")
+        self.image = game.c.create_image(x, y, image=self.o_door, anchor='nw')
+        self.coordinates = Coords(x, y, x + (width / 3), y + height)
+        self.end = True
+        
+    def cdoor(self):
+        self.game.c.itemconfig(self.image, image=self.c_door)
+        self.game.t.update_idletasks()
+            
+            
+
 class Stickman(Sprite):
     def __init__(self, game):
         Sprite.__init__(self, game)
@@ -132,7 +147,6 @@ class Stickman(Sprite):
     def jump(self, evt):
         if self.y == 0:
             self.y = -4
-            
             self.jump_count = 0
 
     def animate(self):
@@ -166,7 +180,7 @@ class Stickman(Sprite):
         self.coordinates.x2 = pos[0] + 27
         self.coordinates.y2 = pos[1] + 30
         return self.coordinates
-
+    
     def move(self):
         self.animate()
         if self.y < 0:
@@ -176,6 +190,7 @@ class Stickman(Sprite):
         if self.y > 0:
             self.jump_count -= 1
         cord = self.coords()
+        self.id = 0
         left = True
         right = True
         top = True
@@ -211,15 +226,23 @@ class Stickman(Sprite):
             if left and self.x < 0 and collided_left(cord, sprite_cord):
                 self.x = 0
                 left = False
+                if sprite.end:
+                    self.end(sprite)
             if right and self.x > 0 and collided_right(cord, sprite_cord):
                 self.x = 0
                 right = False
+                if sprite.end:
+                    self.end(sprite)
         if falling and bottom and self.y == 0 and cord.y2 < self.game.c_height:
             self.y = 4
         self.game.c.move(self.image, self.x, self.y)
+        
+    def end(self, sprite):
+        self.game.running = False
+        self.game.c.itemconfig(self.image, state='hidden')
+        sprite.cdoor()
 
 g =Game()
-
 plat1 = Platform(g, PhotoImage(file='platform2.gif'),\
         40, 480, 66, 10)
 plat2 = Platform(g, PhotoImage(file='platform.gif'),\
@@ -250,6 +273,8 @@ g.sprites.append(plat7)
 g.sprites.append(plat8)
 g.sprites.append(plat9)
 g.sprites.append(plat10)
+door = Door(g, 50, 30, 45, 35)
+g.sprites.append(door)
 stickman = Stickman(g)
 g.sprites.append(stickman)
 g.mainloop()
