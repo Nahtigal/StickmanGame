@@ -2,6 +2,7 @@ from tkinter import *
 import random
 import time
 
+
 class Game:
     def __init__(self):
         self.t = Tk()
@@ -23,6 +24,7 @@ class Game:
         self.running = True
         
     def mainloop(self):
+        #self.c.create_text(250, 250, text='Нажміть пробіл щоб почати гру', font= ('Times', 25), tag = 'start')
         while 1:
             if self.running == True:
                 for sprite in self.sprites:
@@ -184,20 +186,23 @@ class Stickman(Sprite):
                 self.x = 0
                 left = False
                 if sprite.end:
-                    self.end(sprite)
+                    self.game.running = False
+                    time.sleep(0.2)
+                    self.game.c.itemconfig(self.image, state='hidden')
+                    time.sleep(0.2)
+                    sprite.cdoor()  
             if right and self.x > 0 and collided_right(cord, sprite_cord):
                 self.x = 0
                 right = False
                 if sprite.end:
-                    self.end(sprite)
+                    self.game.running = False
+                    time.sleep(0.5)
+                    self.game.c.itemconfig(self.image, state='hidden')
+                    time.sleep(1)
+                    sprite.cdoor()
         if falling and bottom and self.y == 0 and cord.y2 < self.game.c_height:
             self.y = 4
         self.game.c.move(self.image, self.x, self.y)
-        
-    def end(self, sprite):
-        self.game.running = False
-        self.game.c.itemconfig(self.image, state='hidden')
-        sprite.cdoor()
 
 # Edited by Roman Petryk 01.05.2020
 def  within_x(c1, c2):
@@ -242,9 +247,9 @@ def collided_bottom(y, c1, c2):
         if y_calc >= c2.y1 and y_calc <= c2.y2:
             return True
     return False
-
-
-g =Game()
+#game.c.bind_all('<space>',self.start)
+g = Game()
+#def start
 plat1 = Platform(g, PhotoImage(file='platform2.gif'),\
         40, 480, 66, 10)
 plat2 = Platform(g, PhotoImage(file='platform.gif'),\
