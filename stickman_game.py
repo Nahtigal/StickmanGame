@@ -16,8 +16,8 @@ class Game:
         self.bg = PhotoImage(file="background.gif")
         width = self.bg.width()
         height = self.bg.width()
-        for x in range (0, 5):
-            for y in range (0, 5):
+        for x in range(0, 5):
+            for y in range(0, 5):
                 self.c.create_image(y*height, x*width, image = self.bg, anchor = "nw")
         self.sprites = []
         self.running = True
@@ -107,7 +107,7 @@ class Stickman(Sprite):
             self.jump_count = 0
 
     def animate(self):
-        if self.y == 0 and self.x !=0:
+        if self.y == 0 and self.x != 0:
             if time.time() - self.last_time > 0.1:
                 self.last_time = time.time()
                 self.current_image += self.current_image_add
@@ -184,21 +184,31 @@ class Stickman(Sprite):
                 self.x = 0
                 left = False
                 if sprite.end:
-                    self.end(sprite)
+                    #  By Roman Petryk 05.05.2020
+                    self.game.running = False
+                    self.game.c.itemconfig(self.image, state='hidden')
+                    sprite.cdoor()
+                    #  By Roman Petryk 05.05.2020
             if right and self.x > 0 and collided_right(cord, sprite_cord):
                 self.x = 0
                 right = False
                 if sprite.end:
-                    self.end(sprite)
+                    #  By Roman Petryk 05.05.2020
+                    self.game.running = False
+                    self.game.c.itemconfig(self.image, state='hidden')
+                    sprite.cdoor()
+                    #  By Roman Petryk 05.05.2020
         if falling and bottom and self.y == 0 and cord.y2 < self.game.c_height:
             self.y = 4
         self.game.c.move(self.image, self.x, self.y)
-        
-    def end(self, sprite):
+        """  
+        Там був баг з викликом тої функції. То я просто її код захерячив замість її виклику. Туп помилки часаме хочуть 
+        тупих фіксів
+    def end(self):
         self.game.running = False
         self.game.c.itemconfig(self.image, state='hidden')
         sprite.cdoor()
-
+        """
 # Edited by Roman Petryk 01.05.2020
 def  within_x(c1, c2):
     if (c1.x1 > c2.x1 and c1.x1 < c2.x2) \
@@ -211,7 +221,7 @@ def  within_x(c1, c2):
 
 def  within_y(c1, c2):
     if (c1.y1 > c2.y1 and c1.y1 < c2.y2) \
-       or (c1.y2 > c2.y1 and c1.y2 < c2.y2)\
+       or (c2.y1 < c1.y2 < c2.y2)\
        or (c2.y1 > c1.y1 and c2.y1 < c1.y2)\
        or (c2.y2 > c1.y1 and c2.y2 < c1.y2):
         return True
@@ -275,7 +285,7 @@ g.sprites.append(plat7)
 g.sprites.append(plat8)
 g.sprites.append(plat9)
 g.sprites.append(plat10)
-door = Door(g, 50, 30, 45, 35)
+door = Door(g, 470, 470, 45, 35)
 g.sprites.append(door)
 stickman = Stickman(g)
 g.sprites.append(stickman)
