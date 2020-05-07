@@ -1,8 +1,7 @@
 from tkinter import *
 import random
 import time
-
-
+from tkinter import messagebox as mb
 class Game:
     def __init__(self):
         self.t = Tk()
@@ -24,7 +23,6 @@ class Game:
         self.running = True
         
     def mainloop(self):
-        #self.c.create_text(250, 250, text='Нажміть пробіл щоб почати гру', font= ('Times', 25), tag = 'start')
         while 1:
             if self.running == True:
                 for sprite in self.sprites:
@@ -56,6 +54,34 @@ class Platform(Sprite):
         self.photo_image = photo_image
         self.image = game.c.create_image(x, y, image=self.photo_image, anchor='nw')
         self.coordinates = Coords(x, y, x + width, y + height)
+
+class BotPlatform(Sprite):
+    def __init__(self, game, photo_image, x, y, width, height):
+        Platform.__init__(self, game, photo_image, x, y, width, height)
+        self.time = time.time()
+        speed = [-10, 10]
+        random.shuffle(speed)
+        self.x = speed[0]
+        self.width = width
+        self.height = height
+        self.canvas_width = self.game.c.winfo_width()
+    def coords(self):
+        pos = self.game.c.coords(self.image)
+        self.coordinates.x1 = pos[0]
+        self.coordinates.y1 = pos[1]
+        self.coordinates.x2 = pos[0] + self.width
+        self.coordinates.y2 = pos[1] + self.height
+        return self.coordinates
+    def move(self):
+        if time.time() - self.time > 0.3:
+            pos = self.game.c.coords(self.image)
+            self.game.c.move(self.image, self.x, 0)
+            if pos [0] <= 0:
+                self.x = random.randint(1, 3)
+            elif pos[0] + self.width >= self.canvas_width:
+                self.x = random.randint(-3, -1)
+    
+    
 
 class Door(Sprite):
     def __init__(self, game, x, y, width, height):
@@ -190,7 +216,8 @@ class Stickman(Sprite):
                     time.sleep(0.2)
                     self.game.c.itemconfig(self.image, state='hidden')
                     time.sleep(0.2)
-                    sprite.cdoor()  
+                    sprite.cdoor()
+                    mb.showinfo("Congratulations","You won")
             if right and self.x > 0 and collided_right(cord, sprite_cord):
                 self.x = 0
                 right = False
@@ -200,6 +227,7 @@ class Stickman(Sprite):
                     self.game.c.itemconfig(self.image, state='hidden')
                     time.sleep(1)
                     sprite.cdoor()
+                    mb.showinfo("Congratulations","You won")
         if falling and bottom and self.y == 0 and cord.y2 < self.game.c_height:
             self.y = 4
         self.game.c.move(self.image, self.x, self.y)
@@ -247,41 +275,51 @@ def collided_bottom(y, c1, c2):
         if y_calc >= c2.y1 and y_calc <= c2.y2:
             return True
     return False
-#game.c.bind_all('<space>',self.start)
+
+
+    
 g = Game()
-#def start
-plat1 = Platform(g, PhotoImage(file='platform2.gif'),\
-        40, 480, 66, 10)
-plat2 = Platform(g, PhotoImage(file='platform.gif'),\
-        150, 440, 100, 10)
-plat3 = Platform(g, PhotoImage(file='platform.gif'),\
-        300, 400, 100, 10)
-plat4 = Platform(g, PhotoImage(file='platform.gif'),\
-        300, 160, 100, 10)
-plat5 = Platform(g, PhotoImage(file='platform2.gif'),\
-        175, 350, 66, 10)
-plat6 = Platform(g, PhotoImage(file='platform2.gif'),\
-        50, 300, 66, 10)
-plat7 = Platform(g, PhotoImage(file='platform2.gif'),\
-        170, 120, 66, 10)
-plat8 = Platform(g, PhotoImage(file='platform2.gif'),\
-        45, 60, 66, 10)
-plat9 = Platform(g, PhotoImage(file='platform3.gif'),\
-        170, 250, 33, 10)
-plat10 = Platform(g, PhotoImage(file='platform3.gif'),\
-        230, 200, 33, 10)
-g.sprites.append(plat1)
-g.sprites.append(plat2)
-g.sprites.append(plat3)
-g.sprites.append(plat4)
-g.sprites.append(plat5)
-g.sprites.append(plat6)
-g.sprites.append(plat7)
-g.sprites.append(plat8)
-g.sprites.append(plat9)
-g.sprites.append(plat10)
-door = Door(g, 50, 30, 45, 35)
-g.sprites.append(door)
-stickman = Stickman(g)
-g.sprites.append(stickman)
-g.mainloop()
+start = False
+g.c.create_text(250, 250, text='Нажміть пробіл щоб почати гру', font= ('Times', 25), tag = 'txt_start')
+def startgame(event):
+    if event.keysym == 'space':
+        print("l")
+        g.c.delete('txt_start')
+        plat1 = Platform(g, PhotoImage(file='platform2.gif'),\
+            40, 480, 66, 10)
+        plat2 = BotPlatform(g, PhotoImage(file='platform.gif'),\
+            150, 440, 100, 10)
+        plat3 = Platform(g, PhotoImage(file='platform.gif'),\
+            300, 400, 100, 10)
+        plat4 = Platform(g, PhotoImage(file='platform.gif'),\
+            300, 160, 100, 10)
+        plat5 = Platform(g, PhotoImage(file='platform2.gif'),\
+            175, 350, 66, 10)
+        plat6 = Platform(g, PhotoImage(file='platform2.gif'),\
+            50, 300, 66, 10)
+        plat7 = BotPlatform(g, PhotoImage(file='platform2.gif'),\
+            170, 120, 66, 10)
+        plat8 = Platform(g, PhotoImage(file='platform2.gif'),\
+            45, 60, 66, 10)
+        plat9 = Platform(g, PhotoImage(file='platform3.gif'),\
+            170, 250, 33, 10)
+        plat10 = Platform(g, PhotoImage(file='platform3.gif'),\
+            230, 200, 33, 10)
+        stickman = Stickman(g)
+        door = Door(g, 50, 30, 45, 35)
+        g.sprites.append(plat1)
+        g.sprites.append(plat2)
+        g.sprites.append(plat3)
+        g.sprites.append(plat4)
+        g.sprites.append(plat5)
+        g.sprites.append(plat6)
+        g.sprites.append(plat7)
+        g.sprites.append(plat8)
+        g.sprites.append(plat9)
+        g.sprites.append(plat10)
+        g.sprites.append(stickman)
+        g.sprites.append(door)
+        g.mainloop()    
+g.c.bind_all('<KeyPress-space>', startgame)
+
+   
