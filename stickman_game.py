@@ -111,8 +111,9 @@ class Stickman(Sprite):
             PhotoImage(file="figure_R2.gif"),
             PhotoImage(file="figure_R3.gif")
         ]
-        self.image = game.c.create_image(200, 470, image=self.images_left[0], anchor='nw')
-        self.x = -2
+        self.image_stand = PhotoImage(file="st_stand.gif")
+        self.image = game.c.create_image(200, 470, image=self.image_stand, anchor='nw')
+        self.x = 0
         self.y = 0
         self.current_image = 0
         self.current_image_add = 1
@@ -122,7 +123,11 @@ class Stickman(Sprite):
         game.c.bind_all('<KeyPress-Left>',self.turn_left)
         game.c.bind_all('<KeyPress-Right>',self.turn_right)
         game.c.bind_all('<space>',self.jump)
-
+        game.c.bind_all('<KeyPress-Down>',self.turn_down)
+        
+    def turn_down(self, evt):
+        if self.y == 0:
+            self.x = 0
     def turn_left(self, evt):
         if self.y == 0:
             self.x = -2
@@ -143,6 +148,10 @@ class Stickman(Sprite):
                     self.current_image_add = -1
                 if self.current_image <= 0:
                     self.current_image_add = 1
+        if self.x == 0:
+            if self.y == 0:
+                self.game.c.itemconfig(self.image, \
+                        image=self.image_stand)
         if self.x < 0:
             if self.y != 0:
                 self.game.c.itemconfig(self.image, \
